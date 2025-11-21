@@ -15,6 +15,10 @@
         <img src="img/3.png" alt="Logo SGU" width="250px"/><br>
         <b>Logo SGU</b>
       </td>
+      <td align="center">
+        <img src="img/5.png" alt="Logo SGU" width="250px"/><br>
+        <b>DOCKER</b>
+      </td>
     </tr>
   </table>
 </p>
@@ -186,7 +190,80 @@ Response ví dụ:
 }
 ```
 
-### 12.3 Minh họa giao diện
+### 12.3 Minh họa giao diện Website Machine Translation EN-FR
+
 <p align="center">
-  <img src="img/web_demo.png" alt="Demo web translator" width="720px"/>
+  <img src="img/4.png" alt="Demo web translator" width="720px"/>
 </p>
+
+Giao diện hệ thống dịch máy EN–FR được xây dựng theo phong cách hiện đại, trực quan, tập trung vào trải nghiệm người dùng. Ứng dụng hoạt động hoàn toàn trên nền web với bố cục hai khung dịch song song (source – target) và hỗ trợ nhiều tính năng nâng cao:
+
+- **Khung nhập liệu tiếng Anh (Source Panel):** người dùng nhập nội dung cần dịch vào textarea, với bộ đếm ký tự động cập nhật tới 5000 ký tự. Hệ thống hỗ trợ nhập văn bản bằng giọng nói thông qua Web Speech API (nếu trình duyệt cho phép).
+
+- **Khung kết quả tiếng Pháp (Target Panel):** hiển thị bản dịch với hiệu ứng “gõ máy” (typewriter effect), tạo cảm giác tự nhiên giống như mô hình đang xử lý và sinh từng từ. Phần này có thêm các tiện ích gồm nghe phát âm và sao chép nhanh kết quả.
+
+- **Thanh chuyển đổi giao diện Dark/Light:** nằm trên header. Trạng thái giao diện được lưu bằng localStorage giúp khôi phục đúng theme khi người dùng quay lại trang.
+
+- **Nút Translate:** khi nhấn, UI kích hoạt animation loading (thanh chạy + chấm nháy), nút được khóa tạm thời và đổi sang trạng thái “Translating…”. Sau khi backend trả kết quả, khối loading biến mất và bản dịch được hiển thị.
+
+- **Hệ thống gợi ý câu mẫu (Example Chips):** cung cấp 5 tình huống thường gặp như hỏi giá, mô tả hành động, đặt đồ ăn… giúp người dùng thử nhanh chức năng dịch.
+
+- **Lịch sử dịch gần đây:** toàn bộ các cặp câu Anh–Pháp được lưu trong localStorage dưới dạng danh sách 10 mục gần nhất. Người dùng có thể nhấn vào từng mục để điền lại vào khung dịch hoặc xoá toàn bộ lịch sử bằng một nút duy nhất.
+
+- **Xử lý lỗi thân thiện:** khi không kết nối được backend hoặc lỗi mạng, hệ thống hiển thị thông báo nổi (toast) ở góc trên, đảm bảo người dùng nhận biết rõ ràng. Ngoài ra, chế độ demo sử dụng bản dịch mô phỏng để tránh trải nghiệm “trống trơn”.
+
+
+---
+
+
+## Docker — Build & Run
+
+<p align="center">
+  <strong>Docker Container View</strong><br>
+  <img src="img/6.png" alt="Container" width="720px"/>
+</p>
+
+<p align="center">
+  <strong>Docker Image Build Logs</strong><br>
+  <img src="img/7.png" alt="Docker Image" width="720px"/>
+</p>
+
+Thêm hướng dẫn Docker để bạn có thể chạy ứng dụng nhanh trên bất kỳ máy nào có Docker.
+
+**Yêu cầu trước khi chạy**:
+- `best_model.pth` phải tồn tại ở thư mục gốc của project (hoặc mount vào container).
+- `data/multi30k_en_fr` chứa dữ liệu đã xử lý nếu bạn muốn dùng dataset nội bộ.
+- Đã cài Docker và Docker Compose.
+
+### Quick start (docker-compose)
+Chạy các lệnh sau trong thư mục project:
+```bash
+docker-compose up -d
+docker-compose logs -f
+```
+Sau đó mở: http://localhost:5000
+
+### Build & run thủ công
+```bash
+# Build image
+docker build -t nlp-translation-en-fr:latest .
+
+# Run container (mount model + data từ host)
+docker run -d \
+  --name nlp-translation \
+  -p 5000:5000 \
+  -v $(pwd)/best_model.pth:/app/best_model.pth \
+  -v $(pwd)/data:/app/data \
+  nlp-translation-en-fr:latest
+```
+
+### Volumes & file mounts
+- `best_model.pth` (model checkpoint) — mount vào `/app/best_model.pth` để app có thể load model.
+- `data/` — mount thư mục dữ liệu nếu bạn đã chuẩn bị dataset ở host.
+- `static/` và `templates/` được mount sẵn trong `docker-compose.yml` để bạn có thể chỉnh giao diện nhanh mà không cần rebuild image.
+
+### Thông số môi trường & tuỳ chỉnh
+- Đổi port host trong `docker-compose.yml` nếu 5000 đang bị chiếm.
+- Để giới hạn memory: `docker run --memory="2g" ...`.
+- GPU: nếu cần GPU, dùng `nvidia-docker`/`--gpus` và build image tương thích (không mặc định trong Dockerfile hiện tại).
+

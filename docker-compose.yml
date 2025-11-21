@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  translation-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nlp-translation-en-fr
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./best_model.pth:/app/best_model.pth
+      - ./static:/app/static
+      - ./templates:/app/templates
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FLASK_ENV=production
+    restart: unless-stopped
+    networks:
+      - translation-network
+
+networks:
+  translation-network:
+    driver: bridge

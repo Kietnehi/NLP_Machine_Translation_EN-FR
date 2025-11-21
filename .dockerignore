@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dataset raw files (giữ lại processed data)
+multi30k-dataset/
+
+# Model checkpoints (sẽ mount từ host)
+# best_model.pth
+
+# Images
+img/
+*.png
+*.jpg
+*.jpeg
+
+# Documentation
+README.md
+*.md
+# Dataset & models (đã mount từ host nên không cần trong image)
+data/
+best_model.pth
+multi30k-dataset/
