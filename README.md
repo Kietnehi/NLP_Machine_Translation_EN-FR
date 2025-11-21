@@ -238,6 +238,7 @@ Thêm hướng dẫn Docker để bạn có thể chạy ứng dụng nhanh trê
 ### Quick start (docker-compose)
 Chạy các lệnh sau trong thư mục project:
 ```bash
+docker-compose build --no-cache
 docker-compose up -d
 docker-compose logs -f
 ```

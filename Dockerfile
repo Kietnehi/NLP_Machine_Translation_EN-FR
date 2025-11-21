@@ -4,7 +4,7 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (nếu không cần git có thể bỏ đi cho nhẹ)
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
@@ -21,10 +21,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Download NLTK data
 RUN python -c "import nltk; nltk.download('punkt')"
 
-# Copy application files
+# Copy application files (nhờ .dockerignore nên sẽ không copy data / model lớn)
 COPY . .
 
-# Create necessary directories
+# Create necessary directories (nếu đã có trong project thì không cần)
 RUN mkdir -p data/multi30k_en_fr static templates
 
 # Expose port for Flask
