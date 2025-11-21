@@ -1,0 +1,49 @@
+###############################################################################
+# requirements.txt đã được cố định theo environment conda: `nlp_gpu`
+# Mình đã kiểm tra env `nlp_gpu` và lấy phiên bản các package chính.
+###############################################################################
+
+# Python (env `nlp_gpu` đang dùng): Python 3.10
+
+# Các package chính (đã khoá theo phiên bản hiện có trong `nlp_gpu`):
+torch==2.3.0
+torchtext==0.18.0
+torchvision==0.18.0
+torchaudio==2.3.0
+spacy==3.8.11
+nltk==3.9.2
+regex==2025.11.3
+tqdm==4.67.1
+matplotlib==3.10.7
+numpy==1.24.3
+pandas
+scikit-learn
+flask==3.0.0
+
+# spaCy language model wheels (pip có thể cài trực tiếp từ URL này). Khi
+# chạy `pip install -r requirements.txt` các mô hình dưới đây sẽ được cài
+# tự động, tránh phải chạy `python -m spacy download ...` thủ công.
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.8.0/fr_core_news_sm-3.8.0-py3-none-any.whl
+
+###############################################################################
+# Hướng dẫn cài đặt (trong môi trường conda `nlp_gpu`):
+# 1) Cài các package đã pin (ví dụ dùng pip trong env):
+#    conda activate nlp_gpu
+#    pip install -r requirements.txt
+# 2) Nếu cần thêm `pandas` và `scikit-learn`:
+#    (đã thêm vào file để pip/can cài tự động) hoặc dùng conda:
+#    conda install -n nlp_gpu pandas scikit-learn -c conda-forge
+# 3) Cài PyTorch cho CUDA/CPU nếu muốn thay đổi (hãy dùng lệnh từ https://pytorch.org):
+#    ví dụ (conda):
+#    LƯU Ý: Trên Windows, wheel PyTorch cho CUDA thường được cài dễ dàng hơn
+#    bằng `conda` (khuyến nghị). Ví dụ:
+#      conda install pytorch torchvision torchaudio pytorch-cuda=12.6 -c pytorch -c nvidia
+#    Nếu muốn dùng `pip`, dùng lệnh được cung cấp bởi https://pytorch.org/get-started/locally/
+# 4) Tải mô hình spaCy (bắt buộc):
+#      conda activate nlp_gpu
+#      python -m spacy download en_core_web_sm
+#      python -m spacy download fr_core_news_sm
+# 5) NLTK punkt sẽ được tải tự động khi script chạy, hoặc cài thủ công:
+#      python -c "import nltk; nltk.download('punkt')"
+###############################################################################

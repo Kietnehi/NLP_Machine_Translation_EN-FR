@@ -1,0 +1,848 @@
+/* ========== RESET CƠ BẢN ========== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000 100%);
+    color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* ========== BIẾN MÀU CHỦ ĐẠO ========== */
+:root {
+    --primary: #4f46e5;
+    --primary-soft: rgba(79, 70, 229, 0.08);
+    --primary-strong: #6366f1;
+    --accent: #22c55e;
+    --danger: #f97373;
+    --border-subtle: rgba(148, 163, 184, 0.35);
+    --bg-panel: rgba(15, 23, 42, 0.88);
+    --bg-panel-soft: rgba(15, 23, 42, 0.70);
+    --shadow-soft: 0 22px 60px rgba(15, 23, 42, 0.85);
+    --radius-lg: 20px;
+    --radius-full: 999px;
+    --transition-fast: 0.18s ease-out;
+    --transition-med: 0.24s ease;
+}
+
+/* ========== APP WRAPPER ========== */
+.app-container {
+    width: 100%;
+    max-width: 1100px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.85));
+    border-radius: 28px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    box-shadow: var(--shadow-soft);
+    padding: 20px 22px 24px;
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    position: relative;
+}
+
+/* Light glow border */
+.app-container::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid rgba(94, 234, 212, 0.06);
+    pointer-events: none;
+}
+
+/* ========== HEADER ========== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 0 0, #22c55e 0, #4f46e5 40%, #020617 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f9fafb;
+    box-shadow: 0 15px 35px rgba(56, 189, 248, 0.3);
+}
+
+.logo-icon i {
+    font-size: 18px;
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    font-size: 0.72rem;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 165, 250, 0.6);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(8, 47, 73, 0.9));
+    margin-top: 2px;
+    color: #e0f2fe;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* ========== TOAST BÁO LỖI ========== */
+.error-toast {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: rgba(248, 113, 113, 0.12);
+    border: 1px solid rgba(248, 113, 113, 0.55);
+    color: #fecaca;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.error-toast i {
+    color: #fecaca;
+}
+
+/* ========== LAYOUT DỊCH ========== */
+.translator-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.1fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+/* PANEL NGÔN NGỮ */
+.lang-panel {
+    background: var(--bg-panel);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.lang-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 55%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-med);
+}
+
+.lang-panel:hover::before {
+    opacity: 1;
+}
+
+/* Header trong panel */
+.lang-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 2px;
+}
+
+.lang-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: rgba(15, 23, 42, 0.9);
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.lang-selector:hover {
+    border-color: rgba(129, 140, 248, 0.8);
+    background: rgba(30, 64, 175, 0.8);
+    transform: translateY(-1px);
+}
+
+.lang-flag {
+    font-size: 1.05rem;
+}
+
+/* TEXTAREA */
+textarea {
+    width: 100%;
+    min-height: 160px;
+    resize: vertical;
+    border-radius: 16px;
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+    padding: 12px 13px;
+    font-family: inherit;
+    font-size: 0.94rem;
+    color: #e5e7eb;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+}
+
+textarea::placeholder {
+    color: rgba(148, 163, 184, 0.8);
+}
+
+/* Hiệu ứng focus */
+textarea:focus {
+    border-color: rgba(129, 140, 248, 0.95);
+    box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.8), 0 16px 35px rgba(15, 23, 42, 0.9);
+    transform: translateY(-1px);
+}
+
+/* Panel controls (đếm ký tự & icon) */
+.panel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding: 0 3px;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: rgba(15, 23, 42, 0.9);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+.icon-btn i {
+    pointer-events: none;
+}
+
+.icon-btn:hover {
+    background: rgba(30, 64, 175, 0.9);
+    border-color: rgba(129, 140, 248, 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(30, 64, 175, 0.7);
+    color: #e5e7eb;
+}
+
+.char-count {
+    font-size: 0.75rem;
+    color: rgba(148, 163, 184, 0.9);
+}
+
+/* ========== NÚT SWAP ========== */
+.swap-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swap-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #e5e7eb;
+    outline: none;
+    transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.swap-btn i {
+    font-size: 0.95rem;
+}
+
+.swap-btn:hover {
+    background: rgba(30, 64, 175, 0.95);
+    border-color: rgba(129, 140, 248, 0.9);
+    transform: rotate(180deg) scale(1.05);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.65);
+}
+
+/* ========== KHU VỰC ACTION CHÍNH ========== */
+.actions-area {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Nút clear */
+.clear-btn {
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    background: rgba(15, 23, 42, 0.85);
+    color: rgba(209, 213, 219, 0.9);
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.clear-btn:hover {
+    background: rgba(15, 23, 42, 1);
+    border-color: rgba(148, 163, 184, 1);
+    transform: translateY(-1px);
+}
+
+/* Nút translate */
+.translate-btn {
+    border-radius: var(--radius-full);
+    border: none;
+    padding: 9px 18px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+    color: #f9fafb;
+    box-shadow: 0 16px 45px rgba(79, 70, 229, 0.7);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), filter var(--transition-fast);
+}
+
+.translate-btn i {
+    font-size: 0.9rem;
+}
+
+.translate-btn:hover {
+    transform: translateY(-1px) translateX(1px);
+    box-shadow: 0 20px 50px rgba(79, 70, 229, 0.9);
+    filter: brightness(1.03);
+}
+
+.translate-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* Khi có nội dung input, thêm class .active từ JS */
+.translate-btn.active {
+    box-shadow: 0 18px 50px rgba(79, 70, 229, 0.95);
+}
+
+/* Spinner translate */
+.loading-spinner {
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========== EXAMPLE CHIPS ========== */
+.examples-section {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(51, 65, 85, 1);
+}
+
+.examples-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(148, 163, 184, 1);
+    margin-bottom: 10px;
+}
+
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(55, 65, 81, 0.9);
+    background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+    font-size: 0.8rem;
+    color: rgba(209, 213, 219, 0.95);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+.chip i {
+    font-size: 0.85rem;
+}
+
+.chip:hover {
+    border-color: rgba(56, 189, 248, 0.9);
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.2), rgba(15, 23, 42, 0.98));
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(8, 47, 73, 0.9);
+    color: #e5e7eb;
+}
+
+/* ========== SCROLLBAR TÙY CHỈNH ========== */
+textarea::-webkit-scrollbar {
+    width: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.9);
+    border-radius: 999px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+    body {
+        padding: 12px;
+    }
+
+    .app-container {
+        padding: 16px 14px 18px;
+        border-radius: 20px;
+    }
+
+    .translator-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto auto;
+    }
+
+    .swap-container {
+        order: -1;
+        margin-bottom: 4px;
+    }
+
+    .swap-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    textarea {
+        min-height: 130px;
+    }
+
+    .actions-area {
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .error-toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        top: 10px;
+    }
+
+    .chips-container {
+        gap: 6px;
+    }
+
+    .chip {
+        font-size: 0.78rem;
+    }
+}
+/* ================= THEME TOGGLE BUTTON ================= */
+.theme-toggle {
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 999px;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #e5e7eb;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        color 0.18s ease;
+}
+
+.theme-toggle i {
+    font-size: 0.95rem;
+}
+
+.theme-toggle:hover {
+    background: rgba(30, 64, 175, 0.95);
+    border-color: rgba(129, 140, 248, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.7);
+}
+
+/* Thêm transition nhẹ cho body */
+body {
+    transition: background 0.35s ease, color 0.25s ease;
+}
+
+/* ================= LIGHT THEME OVERRIDES ================= */
+body.light-theme {
+    background: radial-gradient(circle at top left, #e5e7eb 0, #cbd5f5 35%, #e5e7eb 100%);
+    color: #0f172a;
+}
+
+/* App container trong light mode */
+body.light-theme .app-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.9));
+    border-color: rgba(148, 163, 184, 0.55);
+    box-shadow: 0 18px 60px rgba(15, 23, 42, 0.25);
+}
+
+/* Panel ngôn ngữ */
+body.light-theme .lang-panel {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(203, 213, 225, 0.9);
+}
+
+body.light-theme .lang-selector {
+    background: rgba(248, 250, 252, 0.95);
+    border-color: rgba(209, 213, 219, 0.9);
+    color: #0f172a;
+}
+
+body.light-theme .lang-selector:hover {
+    background: rgba(219, 234, 254, 0.95);
+    border-color: rgba(59, 130, 246, 0.9);
+}
+
+/* Textarea */
+body.light-theme textarea {
+    background: radial-gradient(circle at top left, #ffffff, #f9fafb);
+    border-color: rgba(203, 213, 225, 0.9);
+    color: #0f172a;
+    box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+body.light-theme textarea::placeholder {
+    color: rgba(148, 163, 184, 0.9);
+}
+
+body.light-theme textarea:focus {
+    border-color: rgba(59, 130, 246, 0.95);
+    box-shadow:
+        0 0 0 1px rgba(59, 130, 246, 0.85),
+        0 16px 35px rgba(148, 163, 184, 0.55);
+}
+
+/* Nút clear & swap & icon-btn trong light mode */
+body.light-theme .clear-btn {
+    background: #f9fafb;
+    border-color: #cbd5f5;
+    color: #0f172a;
+}
+
+body.light-theme .clear-btn:hover {
+    background: #e5e7eb;
+    border-color: #94a3b8;
+}
+
+body.light-theme .swap-btn {
+    background: #ffffff;
+    border-color: #cbd5f5;
+    color: #0f172a;
+}
+
+body.light-theme .swap-btn:hover {
+    background: #e0f2fe;
+}
+
+body.light-theme .icon-btn {
+    background: #f8fafc;
+    border-color: #cbd5f5;
+    color: #0f172a;
+}
+
+body.light-theme .icon-btn:hover {
+    background: #e0f2fe;
+    border-color: #60a5fa;
+}
+
+/* Chips */
+body.light-theme .chip {
+    background: radial-gradient(circle at top left, #ffffff, #f9fafb);
+    border-color: #e2e8f0;
+    color: #1f2933;
+}
+
+body.light-theme .chip:hover {
+    background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+    border-color: #60a5fa;
+    box-shadow: 0 10px 28px rgba(148, 163, 184, 0.60);
+}
+
+/* Error toast light mode */
+body.light-theme .error-toast {
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(239, 68, 68, 0.65);
+    color: #991b1b;
+}
+
+/* Theme toggle icon màu đậm hơn trong light mode */
+body.light-theme .theme-toggle {
+    background: #f9fafb;
+    border-color: #cbd5f5;
+    color: #0f172a;
+}
+/* ========== LOADING DƯỚI OUTPUT ========== */
+.output-loading {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.25s ease, max-height 0.25s ease;
+}
+
+.output-loading.active {
+    opacity: 1;
+    max-height: 40px;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(30, 64, 175, 0.35);
+    overflow: hidden;
+}
+
+.loading-bar-inner {
+    width: 40%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(59,130,246,1), rgba(129,140,248,1));
+    animation: loadingSlide 1s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+    0% { transform: translateX(-120%); }
+    50% { transform: translateX(10%); }
+    100% { transform: translateX(120%); }
+}
+
+.loading-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.loading-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(129, 140, 248, 0.9);
+    animation: dotBounce 0.9s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.12s;
+}
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+@keyframes dotBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-3px); opacity: 1; }
+}
+
+/* ========== HISTORY SECTION ========== */
+.history-section {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(51, 65, 85, 1);
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.history-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(148, 163, 184, 1);
+}
+
+.history-clear-btn {
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background: transparent;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: rgba(148, 163, 184, 0.95);
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.history-clear-btn:hover {
+    background: rgba(30, 64, 175, 0.9);
+    color: #e5e7eb;
+    border-color: rgba(129, 140, 248, 0.9);
+    transform: translateY(-1px);
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.history-item {
+    border-radius: 12px;
+    padding: 7px 9px;
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    background: radial-gradient(circle at top left, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    font-size: 0.78rem;
+}
+
+.history-item:hover {
+    border-color: rgba(56, 189, 248, 0.9);
+    background: radial-gradient(circle at top left, rgba(56,189,248,0.18), rgba(15,23,42,0.96));
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(8,47,73,0.9);
+}
+
+.history-input {
+    color: rgba(226, 232, 240, 0.95);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-output {
+    color: rgba(148, 163, 184, 0.95);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.history-empty {
+    font-size: 0.78rem;
+    color: rgba(148, 163, 184, 0.9);
+}
+
+/* Light mode cho history */
+body.light-theme .history-section {
+    border-top-color: rgba(203, 213, 225, 1);
+}
+
+body.light-theme .history-title {
+    color: rgba(100, 116, 139, 1);
+}
+
+body.light-theme .history-clear-btn {
+    border-color: rgba(148, 163, 184, 0.8);
+    color: #475569;
+}
+
+body.light-theme .history-clear-btn:hover {
+    background: rgba(191, 219, 254, 0.95);
+    color: #0f172a;
+    border-color: #60a5fa;
+}
+
+body.light-theme .history-item {
+    background: radial-gradient(circle at top left, #ffffff, #f9fafb);
+    border-color: #e2e8f0;
+}
+
+body.light-theme .history-item:hover {
+    background: radial-gradient(circle at top left, #eff6ff, #ffffff);
+    border-color: #60a5fa;
+    box-shadow: 0 10px 24px rgba(148, 163, 184, 0.6);
+}
+
+body.light-theme .history-input {
+    color: #0f172a;
+}
+
+body.light-theme .history-output {
+    color: #6b7280;
+}
+
+/* ========== SPEECH RECORDING STATE ========== */
+.icon-btn.recording {
+    border-color: rgba(248, 113, 113, 1);
+    box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.7), 0 12px 26px rgba(127, 29, 29, 0.8);
+    background: radial-gradient(circle at top, rgba(127, 29, 29, 0.95), rgba(30, 64, 175, 0.9));
+    color: #fee2e2;
+}
+
+body.light-theme .icon-btn.recording {
+    background: #fee2e2;
+    border-color: #f97373;
+    color: #7f1d1d;
+    box-shadow: 0 10px 22px rgba(248, 113, 113, 0.7);
+}

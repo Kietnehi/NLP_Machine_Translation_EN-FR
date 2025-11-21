@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Neural Translator</title>
+    
+
+    
+    <!-- Font và Icon giữ nguyên -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- ... -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- THAY THẾ THẺ STYLE BẰNG DÒNG NÀY: -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+   
+</head>
+<body class="dark-theme">
+
+
+    <div class="app-container">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-language"></i>
+                </div>
+                <div>
+                    <h1>NeuroTrans</h1>
+                    <span class="badge">AI Model</span>
+                </div>
+            </div>
+
+            <!-- NÚT ĐỔI THEME -->
+            <button class="theme-toggle" id="themeToggle" title="Đổi giao diện">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </header>
+
+        <div id="error" class="error-toast">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>Network Error</span>
+        </div>
+
+        <div class="translator-grid">
+            <!-- Input Section -->
+            <div class="lang-panel source">
+                <div class="lang-header">
+                    <div class="lang-selector">
+                        <span class="lang-flag">🇬🇧</span> English <i class="fa-solid fa-chevron-down" style="font-size: 0.7em; margin-left: 4px; color: #ccc;"></i>
+                    </div>
+                </div>
+                
+                <textarea id="input" placeholder="Type to translate..."></textarea>
+                
+                <div class="panel-controls">
+                    <div style="display: flex; gap: 8px;">
+                        <div class="icon-btn" id="listenInput" title="Listen">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </div>
+                        <div class="icon-btn" id="recordInput" title="Speak to input">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                    </div>
+                    <span class="char-count" id="charCount">0 / 5000</span>
+                </div>
+            </div>
+
+            <!-- Swap Button -->
+            <div class="swap-container">
+                <button class="swap-btn" title="Swap languages">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div class="lang-panel target">
+                <div class="lang-header">
+                    <div class="lang-selector">
+                        <span class="lang-flag">🇫🇷</span> French <i class="fa-solid fa-chevron-down" style="font-size: 0.7em; margin-left: 4px; color: #ccc;"></i>
+                    </div>
+                </div>
+                
+                <textarea id="output" readonly placeholder="Translation..."></textarea>
+
+                <!-- Loading dưới output -->
+                <div class="output-loading" id="outputLoading">
+                    <div class="loading-bar">
+                        <div class="loading-bar-inner"></div>
+                    </div>
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="panel-controls">
+                    <div style="display: flex; gap: 8px;">
+                        <div class="icon-btn" id="listenOutput" title="Listen">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </div>
+                        <div class="icon-btn" id="copyOutput" title="Copy translation">
+                            <i class="fa-regular fa-copy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-area">
+            <button class="clear-btn" id="clearBtn">Clear text</button>
+            <button class="translate-btn" id="translateBtn">
+                <span>Translate</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <div class="examples-section">
+            <div class="examples-title">Try an example</div>
+            <div class="chips-container">
+                <div class="chip" data-text="A man is riding a bicycle on the street.">
+                    <i class="fa-solid fa-bicycle"></i> Riding bicycle
+                </div>
+                <div class="chip" data-text="The cat is sleeping on the sofa.">
+                    <i class="fa-solid fa-cat"></i> Sleeping cat
+                </div>
+                <div class="chip" data-text="She is reading a book in the library.">
+                    <i class="fa-solid fa-book-open"></i> Reading book
+                </div>
+                <div class="chip" data-text="How much does this cost?">
+                    <i class="fa-solid fa-tag"></i> Cost inquiry
+                </div>
+                <div class="chip" data-text="I would like to order dinner.">
+                    <i class="fa-solid fa-utensils"></i> Ordering dinner
+                </div>
+            </div>
+        </div>
+        <div class="history-section">
+            <div class="history-header">
+                <span class="history-title">Lịch sử dịch gần đây</span>
+                <button class="history-clear-btn" id="clearHistoryBtn">Xóa lịch sử</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- JS sẽ render item tại đây -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const inputText    = document.getElementById('input');
+    const outputText   = document.getElementById('output');
+    const translateBtn = document.getElementById('translateBtn');
+    const clearBtn     = document.getElementById('clearBtn');
+    const errorDiv     = document.getElementById('error');
+    const charCount    = document.getElementById('charCount');
+    const copyBtn      = document.getElementById('copyOutput');
+    const themeToggle  = document.getElementById('themeToggle');
+    const outputLoading = document.getElementById('outputLoading');
+    const recordBtn    = document.getElementById('recordInput');
+    const historyList  = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+    // ================= THEME HANDLING =================
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-theme');
+            document.body.classList.remove('dark-theme');
+            themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            document.body.classList.add('dark-theme');
+            document.body.classList.remove('light-theme');
+            themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.contains('light-theme');
+        const nextTheme = isLight ? 'dark' : 'light';
+        localStorage.setItem('theme', nextTheme);
+        applyTheme(nextTheme);
+    });
+
+    // ================= TYPEWRITER EFFECT =================
+    let typingIntervalId = null;
+
+    function typeTextEffect(text) {
+        if (typingIntervalId) {
+            clearInterval(typingIntervalId);
+            typingIntervalId = null;
+        }
+
+        outputText.value = '';
+        if (!text) return;
+
+        let index = 0;
+        const speed = 15; // ms / ký tự
+
+        typingIntervalId = setInterval(() => {
+            outputText.value += text.charAt(index);
+            index++;
+
+            if (index >= text.length) {
+                clearInterval(typingIntervalId);
+                typingIntervalId = null;
+            }
+        }, speed);
+    }
+
+    // ================= LOADING UI =================
+    function setLoading(isLoading) {
+        if (!outputLoading) return;
+        if (isLoading) {
+            outputLoading.classList.add('active');
+        } else {
+            outputLoading.classList.remove('active');
+        }
+    }
+
+    // ================= TRANSLATION HISTORY (localStorage) =================
+    const HISTORY_KEY   = 'neurotrans_history_v1';
+    const HISTORY_LIMIT = 10;
+    let historyData = [];
+
+    function loadHistory() {
+        try {
+            const raw = localStorage.getItem(HISTORY_KEY);
+            historyData = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            historyData = [];
+        }
+        renderHistory();
+    }
+
+    function saveHistoryItem(input, output) {
+        if (!input || !output) return;
+        historyData.unshift({
+            input,
+            output,
+            ts: Date.now()
+        });
+        if (historyData.length > HISTORY_LIMIT) {
+            historyData = historyData.slice(0, HISTORY_LIMIT);
+        }
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        if (!historyList) return;
+        historyList.innerHTML = '';
+
+        if (!historyData.length) {
+            const empty = document.createElement('div');
+            empty.className = 'history-empty';
+            empty.textContent = 'Chưa có lịch sử dịch.';
+            historyList.appendChild(empty);
+            return;
+        }
+
+        historyData.forEach(item => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'history-item';
+
+            const inDiv = document.createElement('div');
+            inDiv.className = 'history-input';
+            inDiv.textContent = item.input;
+
+            const outDiv = document.createElement('div');
+            outDiv.className = 'history-output';
+            outDiv.textContent = item.output;
+
+            wrapper.appendChild(inDiv);
+            wrapper.appendChild(outDiv);
+
+            wrapper.addEventListener('click', () => {
+                inputText.value = item.input;
+                outputText.value = item.output;
+                inputText.dispatchEvent(new Event('input'));
+                hideError();
+            });
+
+            historyList.appendChild(wrapper);
+        });
+    }
+
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            historyData = [];
+            localStorage.removeItem(HISTORY_KEY);
+            renderHistory();
+        });
+    }
+
+    loadHistory();
+
+    // ================= SPEECH TO TEXT (INPUT) =================
+    let recognition = null;
+    let isRecording = false;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US'; // có thể đổi theo ngôn ngữ input sau
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onresult = (event) => {
+            let finalTranscript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                const res = event.results[i];
+                if (res.isFinal) {
+                    finalTranscript += res[0].transcript;
+                }
+            }
+            if (finalTranscript) {
+                const space = inputText.value && !inputText.value.endsWith(' ') ? ' ' : '';
+                inputText.value = inputText.value + space + finalTranscript.trim();
+                inputText.dispatchEvent(new Event('input'));
+            }
+        };
+
+        recognition.onerror = (event) => {
+            showError('Speech recognition error: ' + event.error);
+        };
+
+        recognition.onend = () => {
+            isRecording = false;
+            if (recordBtn) {
+                recordBtn.classList.remove('recording');
+            }
+        };
+    } else {
+        // Không hỗ trợ speech API
+        if (recordBtn) {
+            recordBtn.style.opacity = '0.4';
+            recordBtn.style.cursor = 'not-allowed';
+            recordBtn.title = 'Trình duyệt không hỗ trợ ghi âm';
+        }
+    }
+
+    if (recordBtn && recognition) {
+        recordBtn.addEventListener('click', () => {
+            if (!recognition) return;
+            if (!isRecording) {
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    recordBtn.classList.add('recording');
+                } catch (e) {
+                    showError('Không thể bắt đầu ghi âm.');
+                }
+            } else {
+                recognition.stop();
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+            }
+        });
+    }
+
+    // ================= INPUT CHAR COUNT =================
+    inputText.addEventListener('input', () => {
+        const len = inputText.value.length;
+        charCount.textContent = `${len} / 5000`;
+        if (len > 0) {
+            translateBtn.classList.add('active');
+        } else {
+            translateBtn.classList.remove('active');
+        }
+    });
+
+    // ================= COPY OUTPUT =================
+    copyBtn.addEventListener('click', () => {
+        if (!outputText.value) return;
+        navigator.clipboard.writeText(outputText.value);
+
+        const originalIcon = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: #10b981;"></i>';
+        setTimeout(() => {
+            copyBtn.innerHTML = originalIcon;
+        }, 1500);
+    });
+
+    // ================= TRANSLATE LOGIC =================
+    translateBtn.addEventListener('click', async () => {
+        const text = inputText.value.trim();
+
+        if (!text) {
+            showError('Please enter text first.');
+            return;
+        }
+
+        hideError();
+        setLoading(true);
+
+        const originalBtnContent = translateBtn.innerHTML;
+        translateBtn.disabled = true;
+        translateBtn.innerHTML = '<i class="fa-solid fa-circle-notch loading-spinner"></i> Translating...';
+        outputText.style.opacity = '0.5';
+
+        try {
+            const response = await fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const translation = data.translation;
+                typeTextEffect(translation);
+                saveHistoryItem(text, translation);
+            } else {
+                if (response.status === 404) {
+                    showError("Backend route /translate not found. (Demo Mode)");
+                } else {
+                    showError(data.error || 'Translation failed');
+                }
+            }
+        } catch (error) {
+            // DEMO MODE: mô phỏng kết quả khi không có backend
+            const mock = "[Mock Translation] " + text + " (en Français)";
+            typeTextEffect(mock);
+            saveHistoryItem(text, mock);
+            // Trong production thì nên:
+            // showError('Network error: ' + error.message);
+        } finally {
+            setTimeout(() => {
+                translateBtn.disabled = false;
+                translateBtn.innerHTML = originalBtnContent;
+                outputText.style.opacity = '1';
+                setLoading(false);
+            }, 800);
+        }
+    });
+
+    // ================= CLEAR =================
+    clearBtn.addEventListener('click', () => {
+        inputText.value = '';
+        outputText.value = '';
+        charCount.textContent = '0 / 5000';
+        translateBtn.classList.remove('active');
+        inputText.focus();
+        hideError();
+
+        if (typingIntervalId) {
+            clearInterval(typingIntervalId);
+            typingIntervalId = null;
+        }
+        setLoading(false);
+    });
+
+    // ================= EXAMPLE CHIPS =================
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            inputText.value = chip.getAttribute('data-text');
+            inputText.dispatchEvent(new Event('input'));
+            // Nếu muốn auto dịch khi click:
+            // translateBtn.click();
+        });
+    });
+
+    // ================= ENTER SHORTCUT =================
+    inputText.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            translateBtn.click();
+        }
+    });
+
+    // ================= ERROR HELPER =================
+    function showError(message) {
+        errorDiv.querySelector('span').textContent = message;
+        errorDiv.style.display = 'flex';
+        setTimeout(() => {
+            errorDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    function hideError() {
+        errorDiv.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
