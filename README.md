@@ -244,6 +244,20 @@ Add Docker instructions so you can quickly run the application on any machine wi
 - `data/multi30k_en_fr` contains the processed dataset if you want to use the internal dataset.
 - Docker and Docker Compose must already be installed.
 
+---
+
+### 📥 Model Download (Google Drive)
+
+To run the application, please download the pretrained model from the link below:
+
+<p align="center">
+  <a href="https://drive.google.com/drive/folders/1lYhi5hPNbhTO1D8xPMW6TTkWrzP_5Gb5?usp=drive_link" target="_blank">
+    <img src="https://img.shields.io/badge/Download%20Model-Google%20Drive-blue?style=for-the-badge&logo=google-drive" />
+  </a>
+</p>
+
+---
+
 ### Quick start (docker-compose)
 Run the following commands inside the project directory:
 ```bash
@@ -277,5 +291,7 @@ docker run -d \
 - Change the host port in `docker-compose.yml` if port 5000 is already in use.
 - To limit memory usage: `docker run --memory="2g" ...`.
 - GPU: if GPU is required, use `nvidia-docker`/`--gpus` and build a compatible image (not provided by the current Dockerfile).
+
+
 
 
