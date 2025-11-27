@@ -261,15 +261,40 @@ def main():
     # 3) Loss, optimizer
     criterion = nn.CrossEntropyLoss(ignore_index=pad_idx)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
-
-    # 4) Train loop + early stopping
+    
+    # 4) Train loop + early stopping + checkpoint
     best_valid_loss = float("inf")
     epochs_no_improve = 0
 
     train_losses = []
     val_losses = []
 
-    for epoch in range(NUM_EPOCHS):
+    checkpoint_path = "last_checkpoint.pth"
+    start_epoch = 0  # epoch index (0-based) để bắt đầu train
+
+    # ====== LOAD CHECKPOINT NẾU CÓ ======
+    if os.path.exists(checkpoint_path):
+        print(f"=> Phát hiện {checkpoint_path}, đang load checkpoint để tiếp tục train...")
+        ckpt = torch.load(checkpoint_path, map_location=DEVICE)
+
+        model.load_state_dict(ckpt["model_state_dict"])
+        optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+
+        # các thông tin khác để tiếp tục
+        last_epoch = ckpt.get("epoch", -1)  # 0-based
+        start_epoch = last_epoch + 1
+
+        best_valid_loss = ckpt.get("best_valid_loss", float("inf"))
+        epochs_no_improve = ckpt.get("epochs_no_improve", 0)
+        train_losses = ckpt.get("train_losses", [])
+        val_losses = ckpt.get("val_losses", [])
+
+        print(f"=> Đã load checkpoint từ epoch {last_epoch + 1}. Sẽ train tiếp từ epoch {start_epoch + 1}.")
+    else:
+        print("=> Không tìm thấy last_checkpoint.pth, train từ đầu.")
+
+    # ====== VÒNG LẶP TRAIN ======
+    for epoch in range(start_epoch, NUM_EPOCHS):
         start_time = time.time()
 
         print(f"\n===== Epoch {epoch + 1}/{NUM_EPOCHS} =====")
@@ -302,6 +327,24 @@ def main():
             print("=> Lưu best_model.pth (model tốt nhất hiện tại)")
         else:
             epochs_no_improve += 1
+
+        # ====== LƯU CHECKPOINT CUỐI MỖI EPOCH ======
+        torch.save(
+            {
+                "epoch": epoch,  # 0-based
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "src_vocab": src_vocab,
+                "trg_vocab": trg_vocab,
+                "pad_idx": pad_idx,
+                "best_valid_loss": best_valid_loss,
+                "epochs_no_improve": epochs_no_improve,
+                "train_losses": train_losses,
+                "val_losses": val_losses,
+            },
+            checkpoint_path,
+        )
+        print("=> Đã lưu last_checkpoint.pth (checkpoint cuối cùng).")
 
         # early stopping
         if epochs_no_improve >= EARLY_STOPPING_PATIENCE:
