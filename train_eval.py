@@ -32,6 +32,9 @@ from config import (
     PAD_TOKEN,
     UNK_TOKEN,
     EOS_TOKEN,
+    SCHEDULER_FACTOR,
+    SCHEDULER_PATIENCE,
+    SCHEDULER_MIN_LR,
 )
 
 from data import build_dataloaders, en_tokenizer, fr_tokenizer
@@ -146,9 +149,10 @@ def translate_sentence(
 
 # ========== 3. Tính BLEU trên tập test ==========
 
-def compute_bleu(model, test_loader, src_vocab, trg_vocab, max_samples=100):
+def compute_bleu(model, test_loader, src_vocab, trg_vocab, max_samples=None):
     """
-    Tính BLEU trên một số câu test (VD max_samples=100)
+    Tính BLEU trên tập test
+    max_samples: None = tính hết, hoặc số nguyên để giới hạn
     """
     smoothie = SmoothingFunction().method4
     model.eval()
@@ -158,8 +162,10 @@ def compute_bleu(model, test_loader, src_vocab, trg_vocab, max_samples=100):
     inv_trg_vocab = trg_vocab
 
     with torch.no_grad():
-        for i, (src, src_len, trg, trg_len) in enumerate(test_loader):
-            if i >= max_samples:
+        for i, (src, src_len, trg, trg_len) in enumerate(tqdm(
+            test_loader, desc="Tính BLEU", total=len(test_loader)
+        )):
+            if max_samples is not None and i >= max_samples:
                 break
 
             # Câu gốc tiếng Pháp (target)
@@ -258,9 +264,19 @@ def main():
     model = Seq2Seq(encoder, decoder, device=DEVICE).to(DEVICE)
     print(model)
 
-    # 3) Loss, optimizer
+    # 3) Loss, optimizer, scheduler
     criterion = nn.CrossEntropyLoss(ignore_index=pad_idx)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    
+    # Scheduler: giảm LR khi val_loss không giảm
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode='min',
+        factor=SCHEDULER_FACTOR,
+        patience=SCHEDULER_PATIENCE,
+        min_lr=SCHEDULER_MIN_LR,
+        # verbose parameter deprecated in newer torch versions; omit it
+    )
     
     # 4) Train loop + early stopping + checkpoint
     best_valid_loss = float("inf")
@@ -279,6 +295,10 @@ def main():
 
         model.load_state_dict(ckpt["model_state_dict"])
         optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+        
+        # Load scheduler nếu có
+        if "scheduler_state_dict" in ckpt:
+            scheduler.load_state_dict(ckpt["scheduler_state_dict"])
 
         # các thông tin khác để tiếp tục
         last_epoch = ckpt.get("epoch", -1)  # 0-based
@@ -310,6 +330,16 @@ def main():
         print(f"Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s")
         print(f"\tTrain Loss: {train_loss:.3f} | PPL: {math.exp(train_loss):.3f}")
         print(f"\tVal   Loss: {valid_loss:.3f} | PPL: {math.exp(valid_loss):.3f}")
+        
+        # Scheduler step: giảm LR nếu val_loss không giảm
+        scheduler.step(valid_loss)
+        # Lấy learning rate hiện tại theo API mới
+        try:
+            current_lr = scheduler.get_last_lr()[0]
+        except Exception:
+            # fallback nếu phiên bản torch cũ không hỗ trợ get_last_lr
+            current_lr = optimizer.param_groups[0]["lr"]
+        print(f"\tCurrent LR: {current_lr:.6f}")
 
         # lưu best model
         if valid_loss < best_valid_loss:
@@ -334,6 +364,7 @@ def main():
                 "epoch": epoch,  # 0-based
                 "model_state_dict": model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
+                "scheduler_state_dict": scheduler.state_dict(),
                 "src_vocab": src_vocab,
                 "trg_vocab": trg_vocab,
                 "pad_idx": pad_idx,
@@ -370,8 +401,11 @@ def main():
     trg_vocab = ckpt["trg_vocab"]
     pad_idx = ckpt["pad_idx"]
 
-    bleu = compute_bleu(model, test_loader, src_vocab, trg_vocab, max_samples=100)
-    print(f"BLEU trung bình (100 câu test đầu): {bleu:.4f}")
+    # Tính BLEU trên toàn bộ tập test (bỏ max_samples hoặc để None)
+    bleu = compute_bleu(model, test_loader, src_vocab, trg_vocab, max_samples=None)
+    print("Kết quả BLEU:")
+    print(f"  - Dạng số thực (0 → 1): {bleu:.4f}")
+    print(f"  - Dạng phần trăm:       {bleu * 100:.2f}%")
 
 
 if __name__ == "__main__":

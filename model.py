@@ -79,7 +79,7 @@ class Decoder(nn.Module):
 
         output, (hidden, cell) = self.rnn(embedded, (hidden, cell))
         # output: [B, 1, hid_dim]
-        prediction = self.fc_out(output.squeeze(1))  # [B, output_dim]
+        prediction = self.fc_out(output.squeeze(1))  # [B, output_dim]  
 
         return prediction, hidden, cell
 

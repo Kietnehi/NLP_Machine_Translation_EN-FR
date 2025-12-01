@@ -38,7 +38,7 @@ https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.8.
 #    ví dụ (conda):
 #    LƯU Ý: Trên Windows, wheel PyTorch cho CUDA thường được cài dễ dàng hơn
 #    bằng `conda` (khuyến nghị). Ví dụ:
-#      conda install pytorch torchvision torchaudio pytorch-cuda=12.6 -c pytorch -c nvidia
+#      conda install pytorch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 pytorch-cuda=12.1 -c pytorch -c nvidia
 #    Nếu muốn dùng `pip`, dùng lệnh được cung cấp bởi https://pytorch.org/get-started/locally/
 # 4) Tải mô hình spaCy (bắt buộc):
 #      conda activate nlp_gpu

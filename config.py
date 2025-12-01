@@ -21,6 +21,11 @@ CLIP = 1.0            # gradient clipping
 
 EARLY_STOPPING_PATIENCE = 3
 
+# ============ SCHEDULER ====================
+SCHEDULER_FACTOR = 0.5      # giảm LR xuống 50% khi val_loss không giảm
+SCHEDULER_PATIENCE = 2      # chờ 2 epochs trước khi giảm LR
+SCHEDULER_MIN_LR = 1e-6     # LR tối thiểu
+
 MAX_LEN_GENERATE = 50
 
 # ============ THIẾT BỊ =====================
