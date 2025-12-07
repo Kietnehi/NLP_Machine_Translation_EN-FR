@@ -98,6 +98,20 @@ def translate(sentence: str) -> str:
 
 
 if __name__ == "__main__":
-    # Demo nhanh
-    print("Demo translate:")
-    print(translate("A man is riding a bicycle on the street."))
+    # Demo nhanh: in ra 5 ví dụ để kiểm tra chức năng translate()
+    examples = [
+        "A man is riding a bicycle on the street.",
+        "A woman is holding a baby in her arms.",
+        "Two dogs are playing in the park.",
+        "A group of people are sitting at a table eating.",
+        "The plane is flying over the mountains.",
+    ]
+
+    print("Demo translate (5 examples):")
+    for s in examples:
+        print("EN:", s)
+        try:
+            print("FR:", translate(s))
+        except Exception as e:
+            print("FR: <error>", e)
+        print()

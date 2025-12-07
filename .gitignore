@@ -1,3 +1,5 @@
 best_model.pth
 last_checkpoint.pth
 *.pth
+/wmt14_fr_en_text/
+/wmt14_100k/

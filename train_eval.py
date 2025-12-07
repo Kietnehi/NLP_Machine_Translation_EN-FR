@@ -270,7 +270,7 @@ def main():
     
     # Scheduler: giảm LR khi val_loss không giảm
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer,
+        optimizer,  
         mode='min',
         factor=SCHEDULER_FACTOR,
         patience=SCHEDULER_PATIENCE,
