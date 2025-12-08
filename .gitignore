@@ -3,3 +3,7 @@ last_checkpoint.pth
 *.pth
 /wmt14_fr_en_text/
 /wmt14_100k/
+spm_en_bpe.model
+spm_en_bpe.vocab
+spm_fr_bpe.model
+spm_fr_bpe.vocab
